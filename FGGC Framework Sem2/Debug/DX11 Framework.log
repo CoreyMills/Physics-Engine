@@ -1,0 +1,6 @@
+﻿  Application.cpp
+d:\visual studio\fggc framework sem2\application.cpp(226): warning C4316: 'CarBody': object allocated on the heap may not be aligned 16
+d:\visual studio\fggc framework sem2\application.cpp(1064): warning C4189: 'fake': local variable is initialized but not referenced
+d:\visual studio\fggc framework sem2\application.cpp(1294): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+Appearance.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
+  DX11 Framework.vcxproj -> D:\Visual Studio\FGGC Framework Sem2\Debug\DX11 Framework.exe
