@@ -16,12 +16,16 @@ CarBody::CarBody(Transform* transform, Vector3 centerOfMass, Rect3 boundingBox, 
 
 	_maxAngularSpeed = 0.4f;
 
+	float x = (_transform->GetScale().x * 2.0f);
+	float y = (_transform->GetScale().y * 2.0f);
+	float z = (_transform->GetScale().z * 2.0f);
+
 	XMFLOAT4X4 temp = XMFLOAT4X4
 	(
-		((0.08333333333f * _mass) * 2), 0.0f, 0.0f, 0.0f,
-		0.0f, ((0.08333333333f * _mass) * 2), 0.0f, 0.0f,
-		0.0f, 0.0f, ((0.08333333333f * _mass) * 2), 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f
+		(0.08333333333f * (_mass * (y*y + z*z))), 0.0f, 0.0f, 0.0f,
+		 0.0f, (0.08333333333f * (_mass * (x*x + z*z))), 0.0f, 0.0f,
+		 0.0f, 0.0f, (0.08333333333f * (_mass * (x*x + y*y))), 0.0f,
+		 0.0f, 0.0f, 0.0f, 1.0f
 	);
 	_inertiaTensor = XMLoadFloat4x4(&temp);
 }
@@ -239,9 +243,9 @@ void CarBody::CalculateAngularAcceleration()
 
 void CarBody::CalculateAngularVelocity(float deltaTime)
 {
-	_angularVelocity += _angularAcceleration * deltaTime;
+	_angularVelocity = (_angularVelocity * (0.9f)^deltaTime) + _angularAcceleration * deltaTime;
 	_angularVelocity.Truncate(_maxAngularSpeed);
-	_angularVelocity = _angularVelocity * 0.9f;
+	//_angularVelocity = _angularVelocity * 0.9f;
 }
 
 void CarBody::CalculateAngularTorque(Vector3 angularForce, Vector3 pointOfContact, float deltaTime)
