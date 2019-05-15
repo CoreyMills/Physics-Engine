@@ -89,7 +89,10 @@ private:
 	std::vector<GameObject *> _movingObjects;
 	std::vector<GameObject*> _staticObjects;
 
-	Camera * _camera;
+	Camera* _camera;
+	Camera* _carCamera;
+	Camera* _currentCamera;
+
 	float _cameraOrbitRadius = 7.0f;
 	float _cameraOrbitRadiusMin = 2.0f;
 	float _cameraOrbitRadiusMax = 50.0f;

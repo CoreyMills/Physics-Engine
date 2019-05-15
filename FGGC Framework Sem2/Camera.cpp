@@ -3,6 +3,8 @@
 Camera::Camera(XMFLOAT3 position, XMFLOAT3 at, XMFLOAT3 up, FLOAT windowWidth, FLOAT windowHeight, FLOAT nearDepth, FLOAT farDepth)
 	: _eye(position), _at(at), _up(up), _windowWidth(windowWidth), _windowHeight(windowHeight), _nearDepth(nearDepth), _farDepth(farDepth)
 {
+	_originalEye = _eye;
+	_parent = nullptr;
 	Update();
 }
 
@@ -12,8 +14,22 @@ Camera::~Camera()
 
 void Camera::Update()
 {
-    // Initialize the view matrix
+	if (_parent)
+	{
+		Vector3 pos = _parent->GetTransform()->GetPosition();
+		Vector3 pForward = _parent->GetTransform()->GetForward();
 
+		Vector3 offset = { pForward.x * -_originalEye.z, _originalEye.y, pForward.z * _originalEye.z };
+
+		XMFLOAT3 oldEye = _eye;
+		XMFLOAT3 newEye = { pos.x + offset.x,  pos.y + offset.y, pos.z + offset.z };
+
+		_at = { pos.x,  pos.y, pos.z };
+
+		XMStoreFloat3(&_eye, (XMVectorLerp(XMLoadFloat3(&newEye), XMLoadFloat3(&oldEye), 0.01f)));
+	}
+
+    // Initialize the view matrix
 	XMFLOAT4 eye = XMFLOAT4(_eye.x, _eye.y, _eye.z, 1.0f);
 	XMFLOAT4 at = XMFLOAT4(_at.x, _at.y, _at.z, 1.0f);
 	XMFLOAT4 up = XMFLOAT4(_up.x, _up.y, _up.z, 0.0f);

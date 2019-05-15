@@ -26,8 +26,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 bool Application::HandleKeyboard(MSG msg)
 {
-	XMFLOAT3 cameraPosition = _camera->GetPosition();
-
 	switch (msg.wParam)
 	{
 	case VK_UP:
@@ -104,11 +102,12 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	CreateDDSTextureFromFile(_pd3dDevice, L"Resources\\blank.dds", nullptr, &_pBlankTextureRV);
 
     // Setup Camera
-	XMFLOAT3 eye = XMFLOAT3(0.0f, 2.0f, -1.0f);
-	XMFLOAT3 at = XMFLOAT3(0.0f, 2.0f, 0.0f);
-	XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	_camera = new Camera(XMFLOAT3(0.0f, 2.0f, -1.0f), XMFLOAT3(0.0f, 2.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f),
+		(float)_renderWidth, (float)_renderHeight, 0.01f, 200.0f);
+	_currentCamera = _camera;
 
-	_camera = new Camera(eye, at, up, (float)_renderWidth, (float)_renderHeight, 0.01f, 200.0f);
+	_carCamera = new Camera(XMFLOAT3(0.0f, 2.0f, -7.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f),
+		(float)_renderWidth, (float)_renderHeight, 0.01f, 200.0f);
 
 	// Setup the scene's light
 	basicLight.AmbientLight = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
@@ -214,13 +213,13 @@ HRESULT Application::InitGameObjects()
 
 	//Cube Objects - NonStatic
 	CarBody* carBody;
-	for (unsigned int i = 0; i < 2; i++)
+	for (unsigned int i = 0; i < 1; i++)
 	{
 		appearance = new Appearance(cubeGeometry, shinyMaterial);
 		appearance->SetTextureRV(_pTextureRV);
 
-		transform = new Transform(Vector3(0.5f), Vector3(0.0f + (i * 0.5f), 3.0f + (i * 2.0f), 0.0f), Vector3(0.0f, 0.0f, 45.0f));
-		//transform = new Transform(Vector3(0.5f), Vector3(0.0f + (i * 1.5f), 0.51f, 3.0f), Vector3());
+		//transform = new Transform(Vector3(0.5f), Vector3(0.0f + (i * 0.5f), 3.0f + (i * 2.0f), 0.0f), Vector3(0.0f, 0.0f, 45.0f));
+		transform = new Transform(Vector3(0.5f), Vector3(0.0f + (i * 1.5f), 1.51f, 3.0f), Vector3());
 		//transform = new Transform(Vector3(0.5f), Vector3(0.0f, 0.9f, 3.0f), Vector3());
 		
 		carBody = new CarBody(transform, _cubeCenterMass, _cubeRect, _cubeVertices);
@@ -230,6 +229,14 @@ HRESULT Application::InitGameObjects()
 
 		gameObject = new GameObject("Car" + std::to_string(i), appearance, transform, carBody);
 		_movingObjects.push_back(gameObject);
+	}
+
+	if (!_movingObjects.empty())
+		_carCamera->SetParent(_movingObjects.at(0));
+	else
+	{
+		_carCamera = nullptr;
+		delete _carCamera;
 	}
 
 	//Cube Objects - Static
@@ -983,10 +990,16 @@ void Application::Cleanup()
 	if (CCWcullMode) CCWcullMode->Release();
 	if (CWcullMode) CWcullMode->Release();
 	if (_pWireFrame) _pWireFrame->Release();
+	if(_pTransparency) _pTransparency->Release();
 
 	if (_camera) _camera->~Camera();
+	if (_carCamera) _carCamera->~Camera();
 
+	if(_octaTree) _octaTree->~OctaTree();
+	if(_particleSystem) _particleSystem->~ParticleSystem();
+	
 	_movingObjects.clear();
+	_staticObjects.clear();
 }
 
 void Application::CollisionDetection(float deltaTime)
@@ -1183,19 +1196,6 @@ void Application::CollisionResolution(GameObject * a, GameObject * b, CollisionR
 
 void Application::Update(float deltaTime)
 {
-	// Update camera
-	float angleAroundZ = XMConvertToRadians(_cameraOrbitAngleXZ);
-
-	float x = _cameraOrbitRadius * cos(angleAroundZ);
-	float z = _cameraOrbitRadius * sin(angleAroundZ);
-
-	XMFLOAT3 cameraPos = _camera->GetPosition();
-	cameraPos.x = x;
-	cameraPos.z = z;
-
-	_camera->SetPosition(cameraPos);
-	_camera->Update();
-
 	//Turn on/off particle managers
 	///////////////////////////////////////////////////
 	if (GetAsyncKeyState(VK_NUMPAD1) & 1)
@@ -1301,7 +1301,7 @@ void Application::Update(float deltaTime)
 	for (auto gameObject : _movingObjects)
 	{
 		if (!GetAsyncKeyState('Q'))
-			gameObject->GetParticleModel()->AddForce(_windDir * _windStrength);
+			//gameObject->GetParticleModel()->AddForce(_windDir * _windStrength);
 
 		gameObject->Update(deltaTime);
 	}
@@ -1323,6 +1323,25 @@ void Application::Update(float deltaTime)
 
 	CollisionDetection(deltaTime);
 
+	// Update camera
+	float angleAroundZ = XMConvertToRadians(_cameraOrbitAngleXZ);
+
+	float x = _cameraOrbitRadius * cos(angleAroundZ);
+	float z = _cameraOrbitRadius * sin(angleAroundZ);
+
+	XMFLOAT3 cameraPos = _camera->GetPosition();
+	cameraPos.x = x;
+	cameraPos.z = z;
+
+	_camera->SetPosition(cameraPos);
+	_camera->Update();
+
+	_currentCamera = _camera;
+	if (GetAsyncKeyState('M'))
+	{
+		_carCamera->Update();
+		_currentCamera = _carCamera;
+	}
 }
 
 void Application::Draw(float deltaTime)
@@ -1350,8 +1369,8 @@ void Application::Draw(float deltaTime)
 
     ConstantBuffer cb;
 
-	XMFLOAT4X4 viewAsFloats = _camera->GetView();
-	XMFLOAT4X4 projectionAsFloats = _camera->GetProjection();
+	XMFLOAT4X4 viewAsFloats = _currentCamera->GetView();
+	XMFLOAT4X4 projectionAsFloats = _currentCamera->GetProjection();
 
 	XMMATRIX view = XMLoadFloat4x4(&viewAsFloats);
 	XMMATRIX projection = XMLoadFloat4x4(&projectionAsFloats);
@@ -1360,7 +1379,7 @@ void Application::Draw(float deltaTime)
 	cb.Projection = XMMatrixTranspose(projection);
 	
 	cb.light = basicLight;
-	cb.EyePosW = _camera->GetPosition();
+	cb.EyePosW = _currentCamera->GetPosition();
 
 	_pImmediateContext->RSSetState(CWcullMode);
 	

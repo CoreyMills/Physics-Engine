@@ -28,6 +28,8 @@ CarBody::CarBody(Transform* transform, Vector3 centerOfMass, Rect3 boundingBox, 
 		 0.0f, 0.0f, 0.0f, 1.0f
 	);
 	_inertiaTensor = XMLoadFloat4x4(&temp);
+
+	//SetGravity(Vector3());
 }
 
 CarBody::~CarBody()
@@ -142,13 +144,13 @@ void CarBody::Update(MOVEMENT_TYPE type, float deltaTime)
 	if (GetAsyncKeyState('L') && 
 		_steeringAngle < MAX_STEERING_ANGLE)
 	{
-		_steeringAngle += 0.5f;
+		_steeringAngle += 1.0f;
 	}
 
 	if (GetAsyncKeyState('J') && 
 		_steeringAngle > -MAX_STEERING_ANGLE)
 	{
-		_steeringAngle -= 0.5f;
+		_steeringAngle -= 1.0f;
 	}
 
 	SwitchGear();
@@ -220,10 +222,6 @@ void CarBody::CalculteForwardVel(float deltaTime)
 
 	arcLength.x = x;
 	arcLength.z = z;
-	
-	//Quaternion q = _transform->GetRotation();
-	//q.addScaledVector(arcLength, 1.0f);
-	//_transform->ApplyRotation(q);
 
 	if (!arcLength.IsZero())
 	{

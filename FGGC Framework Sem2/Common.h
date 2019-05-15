@@ -483,6 +483,25 @@ inline Vector3 ToVec3(XMFLOAT3 v1)
 	return Vector3(v1.x, v1.y, v1.z);
 }
 
+inline XMFLOAT4 ToF4(Vector3 v1, float w)
+{
+	return XMFLOAT4(v1.x, v1.y, v1.z, w);
+}
+
+//XMFLOAT4 VF4(XMVECTOR& vec)
+//{
+//	XMFLOAT4 val;
+//	XMStoreFloat4(&val, vec);
+//	return val;
+//}
+//
+//XMFLOAT3 VF3(XMVECTOR& vec)
+//{
+//	XMFLOAT3 val;
+//	XMStoreFloat3(&val, vec);
+//	return val;
+//}
+
 struct Rect3
 {
 	Vector3 maxPoint;

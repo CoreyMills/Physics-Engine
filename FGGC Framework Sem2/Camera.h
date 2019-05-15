@@ -3,15 +3,14 @@
 #include <windows.h>
 #include <d3dcompiler.h>
 #include "Common.h"
+#include "GameObject.h"
 
 using namespace DirectX;
 
 class Camera
 {
 private:
-	XMFLOAT3 _eye; 
-	XMFLOAT3 _at;
-	XMFLOAT3 _up;
+	XMFLOAT3 _originalEye, _eye, _at, _up;
 
 	FLOAT _windowWidth;
 	FLOAT _windowHeight;
@@ -20,6 +19,8 @@ private:
 
 	XMFLOAT4X4 _view;
 	XMFLOAT4X4 _projection;
+
+	GameObject* _parent;
 
 public:
 	Camera(XMFLOAT3 position, XMFLOAT3 at, XMFLOAT3 up, FLOAT windowWidth, FLOAT windowHeight, FLOAT nearDepth, FLOAT farDepth);
@@ -41,5 +42,8 @@ public:
 	void SetUp(XMFLOAT3 up) { _up = up; }
 
 	void Reshape(FLOAT windowWidth, FLOAT windowHeight, FLOAT nearDepth, FLOAT farDepth);
+
+	GameObject* GetParent() { return _parent; }
+	void SetParent(GameObject* newObj) { _parent = newObj; }
 };
 
