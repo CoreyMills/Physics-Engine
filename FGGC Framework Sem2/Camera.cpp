@@ -30,13 +30,9 @@ void Camera::Update()
 	}
 
     // Initialize the view matrix
-	XMFLOAT4 eye = XMFLOAT4(_eye.x, _eye.y, _eye.z, 1.0f);
-	XMFLOAT4 at = XMFLOAT4(_at.x, _at.y, _at.z, 1.0f);
-	XMFLOAT4 up = XMFLOAT4(_up.x, _up.y, _up.z, 0.0f);
-
-	XMVECTOR EyeVector = XMLoadFloat4(&eye);
-	XMVECTOR AtVector = XMLoadFloat4(&at);
-	XMVECTOR UpVector = XMLoadFloat4(&up);
+	XMVECTOR EyeVector = XMLoadFloat4(&XMFLOAT4(_eye.x, _eye.y, _eye.z, 1.0f));
+	XMVECTOR AtVector = XMLoadFloat4(&XMFLOAT4(_at.x, _at.y, _at.z, 1.0f));
+	XMVECTOR UpVector = XMLoadFloat4(&XMFLOAT4(_up.x, _up.y, _up.z, 0.0f));
 
 	XMStoreFloat4x4(&_view, XMMatrixLookAtLH(EyeVector, AtVector, UpVector));
 

@@ -1,5 +1,29 @@
 ﻿  Application.cpp
 d:\github\physics-engine\fggc framework sem2\application.cpp(225): warning C4316: 'CarBody': object allocated on the heap may not be aligned 16
 d:\github\physics-engine\fggc framework sem2\application.cpp(1077): warning C4189: 'fake': local variable is initialized but not referenced
-d:\github\physics-engine\fggc framework sem2\application.cpp(1291): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+d:\github\physics-engine\fggc framework sem2\application.cpp(1294): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  BaseParManager.cpp
+  Camera.cpp
+d:\github\physics-engine\fggc framework sem2\camera.cpp(33): warning C4238: nonstandard extension used: class rvalue used as lvalue
+d:\github\physics-engine\fggc framework sem2\camera.cpp(34): warning C4238: nonstandard extension used: class rvalue used as lvalue
+d:\github\physics-engine\fggc framework sem2\camera.cpp(35): warning C4238: nonstandard extension used: class rvalue used as lvalue
+  CarBody.cpp
+d:\github\physics-engine\fggc framework sem2\carbody.cpp(245): warning C4238: nonstandard extension used: class rvalue used as lvalue
+  FireParManager.cpp
+  GameObject.cpp
+d:\github\physics-engine\fggc framework sem2\gameobject.cpp(74): warning C4238: nonstandard extension used: class rvalue used as lvalue
+  Main.cpp
+d:\github\physics-engine\fggc framework sem2\main.cpp(19): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  OctaTree.cpp
+  ParticleModel.cpp
+  ParticleSystem.cpp
+  Pole.cpp
+d:\github\physics-engine\fggc framework sem2\pole.cpp(22): warning C4100: 'deltaTime': unreferenced formal parameter
+  RainParManager.cpp
+  SnowParManager.cpp
+  Spring.cpp
+d:\github\physics-engine\fggc framework sem2\spring.cpp(21): warning C4100: 'deltaTime': unreferenced formal parameter
+  Transform.cpp
+d:\github\physics-engine\fggc framework sem2\transform.cpp(40): warning C4238: nonstandard extension used: class rvalue used as lvalue
+  Generating Code...
   DX11 Framework.vcxproj -> D:\GitHub\Physics-Engine\FGGC Framework Sem2\Debug\DX11 Framework.exe

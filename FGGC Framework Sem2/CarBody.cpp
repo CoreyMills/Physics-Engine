@@ -141,16 +141,20 @@ void CarBody::Update(MOVEMENT_TYPE type, float deltaTime)
 			_engineSpeed.z = 0;
 	}
 
-	if (GetAsyncKeyState('L') && 
-		_steeringAngle < MAX_STEERING_ANGLE)
+	if (GetAsyncKeyState('L') && _steeringAngle < MAX_STEERING_ANGLE)
 	{
 		_steeringAngle += 1.0f;
 	}
-
-	if (GetAsyncKeyState('J') && 
-		_steeringAngle > -MAX_STEERING_ANGLE)
+	else if (GetAsyncKeyState('J') && _steeringAngle > -MAX_STEERING_ANGLE)
 	{
 		_steeringAngle -= 1.0f;
+	}
+	else
+	{
+		_steeringAngle *= 0.99f;
+
+		if (_steeringAngle < 2.0f && _steeringAngle > -2.0f)
+			_steeringAngle = 0.0f;
 	}
 
 	SwitchGear();
@@ -173,15 +177,6 @@ void CarBody::Update(MOVEMENT_TYPE type, float deltaTime)
 		_allForces.push_back(_linearVel);
 
 	/*OutputDebugStringA(std::to_string(_gearRatio).c_str());
-	OutputDebugStringA("\n");
-
-	OutputDebugStringA(" Vel: ");
-	OutputDebugStringA(std::to_string(_linearVel.x).c_str());
-	OutputDebugStringA(", ");
-	OutputDebugStringA(std::to_string(_linearVel.y).c_str());
-	OutputDebugStringA(", ");
-	OutputDebugStringA(std::to_string(_linearVel.z).c_str());
-	OutputDebugStringA("\n");
 	OutputDebugStringA("\n");*/
 
 	ApplyFriction();

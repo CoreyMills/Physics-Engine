@@ -1244,31 +1244,34 @@ void Application::Update(float deltaTime)
 	}
 	///////////////////////////////////////////////////
 
-	if (GetAsyncKeyState('O'))
+	if (_movingObjects.size() >= 2)
 	{
-		CarBody* temp = (CarBody*)_movingObjects.at(0)->GetParticleModel();
-		if (temp)
-			temp->SetLinearThrust(Vector3(0.1f, 0.0f, 0.0f));
-		//_gameObjects.at(1)->GetParticleModel()->SetForwardThrust({ 30, 0, 0 });1111111111111111111111111111
-		//_gameObjects.at(1)->Update(_deltaTime);
-	}
+		if (GetAsyncKeyState('O'))
+		{
+			CarBody* temp = (CarBody*)_movingObjects.at(0)->GetParticleModel();
+			if (temp)
+				temp->SetLinearThrust(Vector3(0.1f, 0.0f, 0.0f));
+			//_gameObjects.at(1)->GetParticleModel()->SetForwardThrust({ 30, 0, 0 });
+			//_gameObjects.at(1)->Update(_deltaTime);
+		}
 
-	if (GetAsyncKeyState('P'))
-	{
-		CarBody* temp = (CarBody*)_movingObjects.at(1)->GetParticleModel();
-		//_gameObjects.at(2)->GetParticleModel()->SetUpThrust({ 0, 0, 0 });
+		if (GetAsyncKeyState('P'))
+		{
+			CarBody* temp = (CarBody*)_movingObjects.at(1)->GetParticleModel();
+			//_gameObjects.at(2)->GetParticleModel()->SetUpThrust({ 0, 0, 0 });
 
-		if(temp)
-			temp->SetLinearThrust(Vector3(-0.15f, 0.0f, 0.0f));
-		//_gameObjects.at(2)->GetParticleModel()->SetForwardThrust({ -30, 0, 0 });
-		//_gameObjects.at(2)->Update(_deltaTime);
+			if (temp)
+				temp->SetLinearThrust(Vector3(-0.15f, 0.0f, 0.0f));
+			//_gameObjects.at(2)->GetParticleModel()->SetForwardThrust({ -30, 0, 0 });
+			//_gameObjects.at(2)->Update(_deltaTime);
+		}
 	}
 
 	if (GetAsyncKeyState('K'))
 	{
 		for (auto gameObject : _movingObjects)
 		{
-			CarBody* temp = (CarBody*)_movingObjects.at(1)->GetParticleModel();
+			CarBody* temp = (CarBody*)gameObject->GetParticleModel();
 
 			if (temp)
 				temp->SetLinearThrust(Vector3());

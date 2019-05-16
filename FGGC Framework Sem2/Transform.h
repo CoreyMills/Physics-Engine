@@ -41,6 +41,7 @@ public:
 	void SetRotFlag(bool flag) { _rotFlag = flag; }
 
 	void ApplyRotation(Quaternion quaternion);
+	void SetRotation(Quaternion newRot) { _rotation = newRot; }
 
 private:
 	XMFLOAT4X4 _world;
