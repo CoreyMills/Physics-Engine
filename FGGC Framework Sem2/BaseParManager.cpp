@@ -15,7 +15,7 @@ BaseParManager::BaseParManager(std::string managerName, GameObject * gameObject,
 
 	_managerLifeSpan = managerLifeSpan;
 
-	_timePassed = 0.0f;
+	_timeSinceActivated = 0.0f;
 	_timeSinceSpawn = 0.0f;
 
 	if (_particleArray.empty())
@@ -37,12 +37,12 @@ void BaseParManager::UpdateParticles(float deltaTime)
 {
 	_timeSinceSpawn += deltaTime;
 
-	_timePassed -= deltaTime;
-	if (_timePassed <= 0.0f)
+	_timeSinceActivated -= deltaTime;
+	if (_timeSinceActivated <= 0.0f)
 	{
-		_timePassed = _parLifeSpan / _particleArray.size();
+		_timeSinceActivated = _parLifeSpan / _particleArray.size();
 		
-		int numToActive = (int)(deltaTime / _timePassed);
+		int numToActive = (int)(deltaTime / _timeSinceActivated);
 		int numActivated = 0;
 
 		for (Particle* par : _particleArray)

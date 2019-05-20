@@ -29,6 +29,7 @@ CarBody::CarBody(Transform* transform, Vector3 centerOfMass, Rect3 boundingBox, 
 	);
 	_inertiaTensor = XMLoadFloat4x4(&temp);
 
+	//debugging
 	//SetGravity(Vector3());
 }
 
@@ -141,11 +142,11 @@ void CarBody::Update(MOVEMENT_TYPE type, float deltaTime)
 			_engineSpeed.z = 0;
 	}
 
-	if (GetAsyncKeyState('L') && _steeringAngle < MAX_STEERING_ANGLE)
+	if (GetAsyncKeyState('D') && _steeringAngle < MAX_STEERING_ANGLE)
 	{
 		_steeringAngle += 1.0f;
 	}
-	else if (GetAsyncKeyState('J') && _steeringAngle > -MAX_STEERING_ANGLE)
+	else if (GetAsyncKeyState('A') && _steeringAngle > -MAX_STEERING_ANGLE)
 	{
 		_steeringAngle -= 1.0f;
 	}
@@ -155,6 +156,24 @@ void CarBody::Update(MOVEMENT_TYPE type, float deltaTime)
 
 		if (_steeringAngle < 2.0f && _steeringAngle > -2.0f)
 			_steeringAngle = 0.0f;
+	}
+
+	if (GetAsyncKeyState('J'))
+	{
+		Quaternion debugRot;
+		debugRot.addScaledVector(Vector3(0.0f, -1.0f, 0.0f), deltaTime);
+		debugRot.normalise();
+
+		_transform->ApplyRotation(debugRot);
+	}
+
+	if (GetAsyncKeyState('L'))
+	{
+		Quaternion debugRot;
+		debugRot.addScaledVector(Vector3(0.0f, 1.0f, 0.0f), deltaTime);
+		debugRot.normalise();
+
+		_transform->ApplyRotation(debugRot);
 	}
 
 	SwitchGear();

@@ -73,16 +73,9 @@ public:
 	virtual void Reset();
 
 protected:
-
 	bool _staticObj;
 
-	std::vector<Vector3> _collisionVels;
-	std::vector<Vector3> _vertices;
-	Rect3 _axisAlignedBBox;
-	Rect3 _boundingBox;
-
 	Transform* _transform;
-	Quaternion* _quaternion;
 
 	std::vector<Vector3> _allForces;
 	Vector3 _acceleration;
@@ -105,4 +98,9 @@ protected:
 
 	//Collision Vars
 	float _radius;
+
+	std::vector<Vector3> _collisionVels;
+	std::vector<Vector3> _vertices;
+	Rect3 _axisAlignedBBox;
+	Rect3 _boundingBox;
 };

@@ -5,7 +5,7 @@
 class Spring
 {
 public:
-	Spring(GameObject* aObj, GameObject* bObj, float minBuffer, float maxBuffer);
+	Spring(GameObject* aObj, GameObject* bObj, float minBuffer, float maxBuffer, float forceStrength);
 	~Spring();
 
 	void Update(float deltaTime);
@@ -14,6 +14,7 @@ private:
 	GameObject* _aObj;
 	GameObject* _bObj;
 
-	float minBuffer;
-	float maxBuffer;
+	float _minBuffer;
+	float _maxBuffer;
+	float _forceStrength;
 };

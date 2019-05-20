@@ -51,8 +51,7 @@ inline bool LineCollision(Vector2 aStart, Vector2 aEnd, Vector2 bStart, Vector2 
 
 //Ian Millington Cyclone Physics code- Used as reference for code below.
 static inline Vector3 GetContactPoint(Vector3 &pOne,Vector3 &dOne,int oneSize,
-									Vector3 &pTwo,Vector3 &dTwo,int twoSize,
-									bool useOne)
+						Vector3 &pTwo,Vector3 &dTwo,int twoSize,bool useOne)
 {
 	Vector3 toSt, cOne, cTwo;
 	int dpStaOne, dpStaTwo, dpOneTwo, smOne, smTwo;
@@ -153,11 +152,15 @@ inline CollisionResults RotatedBoundingBoxCollision(Rect3 a, Transform aTransfor
 	int bestPointAxis = 0;
 	float smallestOverlap = INT_MAX;
 	Vector3 aClosestPoint, bClosestPoint;
+	std::vector<Vector3> currentClosestPoints;
+	for (int i = 0; i < 4; i++)
+	{
+		currentClosestPoints.push_back(Vector3());
+	}
 
 	for (unsigned int i = 0; i < axisArray.size(); i++)
 	{
 		// 01 obj1, 23 obj2
-		Vector3 currentClosestPoints[4];
 
 		if (axisArray.at(i).IsZero())
 			continue;
@@ -174,13 +177,13 @@ inline CollisionResults RotatedBoundingBoxCollision(Rect3 a, Transform aTransfor
 
 			if (scalarProjection < obj1Min)
 			{
-				currentClosestPoints[0] = aPoints.at(j) * aTransform.GetWorldMatrix();
+				currentClosestPoints.at(0) = aPoints.at(j) * aTransform.GetWorldMatrix();
 				obj1Min = scalarProjection;
 			}
 
 			if (scalarProjection > obj1Max)
 			{
-				currentClosestPoints[1] = aPoints.at(j) * aTransform.GetWorldMatrix();
+				currentClosestPoints.at(1) = aPoints.at(j) * aTransform.GetWorldMatrix();
 				obj1Max = scalarProjection;
 			}
 		}
@@ -191,13 +194,13 @@ inline CollisionResults RotatedBoundingBoxCollision(Rect3 a, Transform aTransfor
 
 			if (scalarProjection < obj2Min)
 			{
-				currentClosestPoints[2] = bPoints.at(j) * bTransform.GetWorldMatrix();
+				currentClosestPoints.at(2) = bPoints.at(j) * bTransform.GetWorldMatrix();
 				obj2Min = scalarProjection;
 			}
 
 			if (scalarProjection > obj2Max)
 			{
-				currentClosestPoints[3] = aPoints.at(j) * bTransform.GetWorldMatrix();
+				currentClosestPoints.at(3) = aPoints.at(j) * bTransform.GetWorldMatrix();
 				obj2Max = scalarProjection;
 			}
 		}
@@ -212,19 +215,16 @@ inline CollisionResults RotatedBoundingBoxCollision(Rect3 a, Transform aTransfor
 		//overlap = fmaxf(fminf(obj1Max, obj2Max) - fmaxf(obj1Min, obj2Min), 0.01f);
 		if (overlap < smallestOverlap)
 		{
-			Vector3 vertexToOther = currentClosestPoints[0] - bTransform.GetPosition();
-			aClosestPoint = currentClosestPoints[0];
-			bClosestPoint = currentClosestPoints[2];
-			if (vertexToOther.Length() > (currentClosestPoints[1] - bTransform.GetPosition()).Length())
+			aClosestPoint = currentClosestPoints.at(0);
+			bClosestPoint = currentClosestPoints.at(2);
+			if ((currentClosestPoints.at(0) - bTransform.GetPosition()).Length() > (currentClosestPoints.at(1) - bTransform.GetPosition()).Length())
 			{
-				aClosestPoint = currentClosestPoints[1];
+				aClosestPoint = currentClosestPoints.at(1);
 			}
 
-			vertexToOther = currentClosestPoints[2] - aTransform.GetPosition();
-
-			if (vertexToOther.Length() < (currentClosestPoints[3] - aTransform.GetPosition()).Length())
+			if ((currentClosestPoints.at(2) - aTransform.GetPosition()).Length() < (currentClosestPoints.at(3) - aTransform.GetPosition()).Length())
 			{
-				bClosestPoint = currentClosestPoints[3];
+				bClosestPoint = currentClosestPoints.at(3);
 			}
 
 			smallestOverlap = overlap;

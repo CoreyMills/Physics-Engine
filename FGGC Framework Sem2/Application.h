@@ -82,7 +82,7 @@ private:
 
 	ID3D11SamplerState * _pSamplerLinear = nullptr;
 
-	Light basicLight;
+	Light _basicLight;
 
 	OctaTree* _octaTree;
 	ParticleSystem* _particleSystem;

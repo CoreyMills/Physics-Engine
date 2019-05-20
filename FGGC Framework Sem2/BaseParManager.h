@@ -52,11 +52,13 @@ struct Particle
 class BaseParManager
 {
 public:
-	BaseParManager(std::string managerName, GameObject * gameObjectfloat, float managerLifeSpan, float particleLifeSpan, int numOfPars, bool active);
+	BaseParManager(std::string managerName, GameObject * gameObjectfloat, 
+		float managerLifeSpan, float particleLifeSpan, int numOfPars, bool active);
 	~BaseParManager();
 
 	virtual void UpdateParticles(float deltaTime);
-	void DrawParticles(ID3D11DeviceContext * pImmediateContext, ID3D11Buffer* constantBuffer, ConstantBuffer cb);
+	void DrawParticles(ID3D11DeviceContext * pImmediateContext, 
+		ID3D11Buffer* constantBuffer, ConstantBuffer cb);
 
 	virtual Particle* CreateParticle();
 	void RemoveParticles(int numOfPars);
@@ -94,7 +96,7 @@ protected:
 
 	float _managerLifeSpan;
 	float _parLifeSpan;
-	float _timePassed;
+	float _timeSinceActivated;
 	float _timeSinceSpawn;
 
 	bool _active;

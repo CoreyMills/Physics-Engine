@@ -130,10 +130,10 @@
     <ClCompile Include="FireParManager.cpp">
       <Filter>Source\ParticleSystem</Filter>
     </ClCompile>
-    <ClCompile Include="SnowParManager.cpp">
+    <ClCompile Include="RainParManager.cpp">
       <Filter>Source\ParticleSystem</Filter>
     </ClCompile>
-    <ClCompile Include="RainParManager.cpp">
+    <ClCompile Include="SnowParManager.cpp">
       <Filter>Source\ParticleSystem</Filter>
     </ClCompile>
   </ItemGroup>

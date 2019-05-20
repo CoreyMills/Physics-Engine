@@ -110,11 +110,11 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 		(float)_renderWidth, (float)_renderHeight, 0.01f, 200.0f);
 
 	// Setup the scene's light
-	basicLight.AmbientLight = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	basicLight.DiffuseLight = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	basicLight.SpecularLight = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
-	basicLight.SpecularPower = 20.0f;
-	basicLight.LightVecW = XMFLOAT3(0.0f, 1.0f, -1.0f);
+	_basicLight.AmbientLight = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	_basicLight.DiffuseLight = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	_basicLight.SpecularLight = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
+	_basicLight.SpecularPower = 20.0f;
+	_basicLight.LightVecW = XMFLOAT3(0.0f, 1.0f, -1.0f);
 
 	_windDir = Vector3(1.0f, 0.0f, 0.0f);
 	_windChangeChance = 10.0f;
@@ -213,7 +213,7 @@ HRESULT Application::InitGameObjects()
 
 	//Cube Objects - NonStatic
 	CarBody* carBody;
-	for (unsigned int i = 0; i < 1; i++)
+	for (unsigned int i = 0; i < 2; i++)
 	{
 		appearance = new Appearance(cubeGeometry, shinyMaterial);
 		appearance->SetTextureRV(_pTextureRV);
@@ -1196,6 +1196,57 @@ void Application::CollisionResolution(GameObject * a, GameObject * b, CollisionR
 
 void Application::Update(float deltaTime)
 {
+	if (GetAsyncKeyState(VK_NUMPAD9) & 1)
+	{
+		_movingObjects.clear();
+	}
+	else if (GetAsyncKeyState(VK_NUMPAD8) & 1)
+	{
+		Geometry* cubeGeometry = new Geometry();
+		cubeGeometry->indexBuffer = _pCubeIndexBuffer;
+		cubeGeometry->vertexBuffer = _pCubeVertexBuffer;
+		cubeGeometry->numberOfIndices = 36;
+		cubeGeometry->vertexBufferOffset = 0;
+		cubeGeometry->vertexBufferStride = sizeof(SimpleVertex);
+
+		Material* shinyMaterial = new Material();
+		shinyMaterial->ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+		shinyMaterial->diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+		shinyMaterial->specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+		shinyMaterial->specularPower = 10.0f;
+
+		Appearance* appearance = new Appearance(cubeGeometry, shinyMaterial);
+		appearance->SetTextureRV(_pTextureRV);
+
+		Transform* transform = new Transform(Vector3(0.5f), Vector3(0.0f, 0.51f, 3.0f), Vector3());
+
+		CarBody* carBody = new CarBody(transform, _cubeCenterMass, _cubeRect, _cubeVertices);
+		carBody->DisableStatic();
+		carBody->SetRadius(transform->GetScale().x + (transform->GetScale().x / 2));
+		carBody->SetMass(50.0f);
+
+		GameObject* gameObject = new GameObject("Car" + std::to_string(_movingObjects.size()), appearance, transform, carBody);
+		_movingObjects.push_back(gameObject);
+
+		cubeGeometry = nullptr;
+		delete cubeGeometry;
+
+		shinyMaterial = nullptr;
+		delete shinyMaterial;
+
+		gameObject = nullptr;
+		delete gameObject;
+
+		appearance = nullptr;
+		delete appearance;
+
+		transform = nullptr;
+		delete transform;
+
+		carBody = nullptr;
+		delete carBody;
+	}
+
 	//Turn on/off particle managers
 	///////////////////////////////////////////////////
 	if (GetAsyncKeyState(VK_NUMPAD1) & 1)
@@ -1250,7 +1301,7 @@ void Application::Update(float deltaTime)
 		{
 			CarBody* temp = (CarBody*)_movingObjects.at(0)->GetParticleModel();
 			if (temp)
-				temp->SetLinearThrust(Vector3(0.1f, 0.0f, 0.0f));
+				temp->SetLinearThrust(Vector3(0.15f, 0.0f, 0.0f));
 			//_gameObjects.at(1)->GetParticleModel()->SetForwardThrust({ 30, 0, 0 });
 			//_gameObjects.at(1)->Update(_deltaTime);
 		}
@@ -1271,12 +1322,6 @@ void Application::Update(float deltaTime)
 	{
 		for (auto gameObject : _movingObjects)
 		{
-			CarBody* temp = (CarBody*)gameObject->GetParticleModel();
-
-			if (temp)
-				temp->SetLinearThrust(Vector3());
-
-			//_gameObjects.at(i)->GetTransform()->SetPosition(Vector3());
 			gameObject->GetParticleModel()->SetVelocity(Vector3());
 			gameObject->GetParticleModel()->SetAcceleration(Vector3());
 		}
@@ -1290,7 +1335,7 @@ void Application::Update(float deltaTime)
 		if (randChance <= _windChangeChance)
 		{
 			_windTimeWaited = 0.0f;
-			OutputDebugStringA("change");
+			//OutputDebugStringA("change");
 			_windStrength = rand() % 10 + 2;
 			_windDir = Vector3(RandomClamped(), 0.0f, RandomClamped());
 		}
@@ -1303,15 +1348,20 @@ void Application::Update(float deltaTime)
 	// Update objects
 	for (auto gameObject : _movingObjects)
 	{
-		if (!GetAsyncKeyState('Q'))
-			//gameObject->GetParticleModel()->AddForce(_windDir * _windStrength);
+		if (GetAsyncKeyState('Q'))
+			gameObject->GetParticleModel()->AddForce(_windDir * _windStrength);
 
 		gameObject->Update(deltaTime);
 	}
 
 	if (GetAsyncKeyState('Z'))
 	{
-		Spring spring = Spring(_movingObjects.at(0), _movingObjects.at(1), 5.0f, 10.0f);
+		_movingObjects.at(0)->GetParticleModel()->SetMass(1.0f);
+		_movingObjects.at(1)->GetParticleModel()->SetMass(1.0f);
+
+		float averageMass = (_movingObjects.at(0)->GetParticleModel()->GetMass() + 
+			_movingObjects.at(1)->GetParticleModel()->GetMass()) / 2;
+		Spring spring = Spring(_movingObjects.at(0), _movingObjects.at(1), 5.0f, 6.0f, 3.0f * averageMass);
 		spring.Update(deltaTime);
 	}
 
@@ -1381,7 +1431,7 @@ void Application::Draw(float deltaTime)
 	cb.View = XMMatrixTranspose(view);
 	cb.Projection = XMMatrixTranspose(projection);
 	
-	cb.light = basicLight;
+	cb.light = _basicLight;
 	cb.EyePosW = _currentCamera->GetPosition();
 
 	_pImmediateContext->RSSetState(CWcullMode);
